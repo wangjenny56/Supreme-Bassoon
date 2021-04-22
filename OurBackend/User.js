@@ -1,8 +1,6 @@
 var mongoose = require('mongoose');
 
-// the host:port must match the location where you are running MongoDB
-// the "myDatabase" part can be anything you like
-const uri = "mongodb+srv://jwang6:EAC-_hFD4_K9+9a@cluster0.z6uhh.mongodb.net/test";
+const uri = "mongodb+srv://jwang6:EAC-_hFD4_K9+9a@cluster0.z6uhh.mongodb.net/Supreme-BassoonTest";
 
 //Set up default mongoose connection
 mongoose.connect(uri, {
@@ -17,19 +15,6 @@ console.log('Mongoose is connected!');
 var Schema = mongoose.Schema;
 
 var userSchema = new Schema({
-    username: String,
-	password: String,
-    restaurant_name: String, 
-    cuisine: String, 
-    customers_served: Number, 
-    email: String, 
-    phone_number: String, 
-    location: Object, 
-    hours: Object, 
-    listings: Array
-});
-
-/*var userSchema = new Schema({
 	username: String,
 	password: String,
     restaurant_name: String, 
@@ -64,10 +49,9 @@ var userSchema = new Schema({
 
         }
     ]
-}); */
+}); 
 
-// export personSchema as a class called Person
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model('User', userSchema, "FakeData");
 
 /*
 {
