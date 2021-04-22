@@ -1,0 +1,21 @@
+body{
+    margin: 0;
+    padding: 0;
+    background-color: mistyrose;
+}
+ h1{
+    text-align: center;
+    margin-top: 200px;
+    font-family: URW Chancery L, cursive;
+}
+.container{
+    text-align: center;
+    margin-top: 100px;
+}
+.myButton{
+    border: 3px solid salmon;
+    padding: 30px 40px;
+    font-size: 20px;
+    font-family: URW Chancery L, cursive;
+    margin: 25px;
+}
