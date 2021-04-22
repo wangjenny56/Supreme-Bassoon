@@ -15,8 +15,8 @@ console.log('Mongoose is connected!');
 var Schema = mongoose.Schema;
 
 var userSchema = new Schema({
-	username: String,
-	password: String,
+    username: String,
+    password: String,
     restaurant_name: String, 
     cuisine: String, 
     customers_served: Number, 
