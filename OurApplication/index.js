@@ -92,6 +92,23 @@ app.use('/createDonation', (req, res) => {
 app.use('/FrontEnd', express.static('FrontEnd'));
 app.use('/post', (req, res) => { res.redirect('/FrontEnd/Pages/donationform.html'); } );
 
+//5.1 View All Donation Listing Feed for Social Service
+//Example: http://localhost:3000/viewListingsForSocialService?zipcode=19010
+app.use('/viewListingsForSocialService', (req, res) => {
+	var zipcode = req.query.zipcode; 
+	User.find({"location.zipcode": zipcode}, (error, result) => {
+		if(error) {
+			return console.log(`Error has occurred: ${error}`);
+		}
+		else{
+			res.type('html').status(200);
+			res.send(result[0].listings);
+		}
+		
+	})
+});
+
+
 // This just sends back a message for any URL path not covered above
 app.use('/test', (req, res) => {
 	//return res.send('Default message.');  
