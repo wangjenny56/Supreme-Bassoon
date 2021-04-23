@@ -29,6 +29,7 @@ app.use('/history', (req, res) => {
 		    res.write(err);
 		}
 		else {
+			//no users
 		    if (users.length == 0) {
 			res.type('html').status(200);
 			res.write('There are no users');
@@ -39,22 +40,24 @@ app.use('/history', (req, res) => {
 			res.type('html').status(200);
 			users.forEach( (user) => {
 				if (user.username == "jwang3"){
+					//currently only for jenny (search for 1 user)
 					user.listings.forEach((listing) =>{
 						res.write('<li>Food Description: ' + listing.food_description + 
 						'; Food Type: ' + listing.food_type + '; Food Quantity: ' + listing.quantity +
 						'; Perishability: ' + listing.perishability + '; Pick Up Time: ' + 
 						listing.pick_up_time + '; Pick Up By: ' + listing.picked_up_by + '</li>');
+							//send information for all listings in user
 			   		});
 				}
 				else{
-					res.write('There are no listings.');
+					res.write('User not found.');
 				}
 			})
 			res.write('</ul>');
 			res.end();
 		    }
 		}
-	    }).sort({ 'pick_up_time': -1 }); // this sorts them BEFORE rendering the results
+	    }).sort({ 'pick_up_time': -1 }); //sorts in descending order BEFORE rendering the results
     });
 
 // This just sends back a message for any URL path not covered above
