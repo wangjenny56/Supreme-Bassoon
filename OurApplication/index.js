@@ -20,7 +20,7 @@ app.use('/all', (req, res) => {
 
 // endpoint for showing all the listings
 app.use('/history', (req, res) => {
-    
+	var userFound = false;
 	// find all the User objects in the database
 	User.find( {}, (err, users) => {
 		if (err) {
@@ -41,6 +41,7 @@ app.use('/history', (req, res) => {
 			users.forEach( (user) => {
 				if (user.username == "jwang3"){
 					//currently only for jenny (search for 1 user)
+					userFound = true;
 					user.listings.forEach((listing) =>{
 						res.write('<li>Food Description: ' + listing.food_description + 
 						'; Food Type: ' + listing.food_type + '; Food Quantity: ' + listing.quantity +
@@ -49,7 +50,7 @@ app.use('/history', (req, res) => {
 							//send information for all listings in user
 			   		});
 				}
-				else{
+				else if (!userFound){
 					res.write('User not found.');
 				}
 			})
