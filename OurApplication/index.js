@@ -7,7 +7,7 @@ var bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // import the Person class from Person.js
-var User = require('./User.js');
+var User = require('./User.js'); 
 
 app.use('/all', (req, res) => {
 	User.find({}, (error, result) => {
@@ -81,7 +81,7 @@ app.use('/createDonation', (req, res) => {
 			}
 			else {
 				// display the "successfull created" message
-				res.send('successfully added ' + donationListing.food_type + ' to the database');
+				res.send('successfully added ' + req.body.food_description + ' to the database');
 			}
 			} ); 
 
