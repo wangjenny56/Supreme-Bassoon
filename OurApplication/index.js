@@ -90,7 +90,7 @@ app.use('/createDonation', (req, res) => {
 });
 
 app.use('/FrontEnd', express.static('FrontEnd'));
-app.use('/post', (req, res) => { res.redirect('/FrontEnd/Pages/donationform.html'); } );
+app.use('/postDonation', (req, res) => { res.redirect('/FrontEnd/Pages/donationform.html'); } );
 
 //5.1 View All Donation Listing Feed for Social Service
 //Example: http://localhost:3000/viewListingsForSocialService?zipcode=19010
