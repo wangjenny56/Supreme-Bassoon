@@ -89,8 +89,38 @@ app.use('/createDonation', (req, res) => {
 	
 });
 
+// endpoint for creating a new restaurant user
+app.use('/createUser', (req, res) => {
+	// construct the restaurant user from the form data which is in the request body
+	var newUser = new User({
+		username: req.body.username,
+		password: req.body.password,
+		restaurant_name: req.body.restaurant_name,
+		cuisine: req.body.cuisine,
+		customers_served: req.body.customers_served,
+		email: req.body.email,
+		phone_number: req.body.phone_number,
+	});
+
+	// save the person to the database
+	newUser.save((err) => {
+		if (err) {
+			res.type('html').status(200);
+			res.write('uh oh: ' + err);
+			console.log(err);
+			res.end();
+		}
+		else {
+			// display the "successfull created" message
+			res.send('successfully added ' + newUser.username + ' to the database');
+		}
+	});
+}
+);
+
 app.use('/FrontEnd', express.static('FrontEnd'));
-app.use('/postDonation', (req, res) => { res.redirect('/FrontEnd/Pages/donationform.html'); } );
+app.use('/postDonation', (req, res) => { res.redirect('/FrontEnd/Pages/donationform.html'); });
+app.use('/createRestaurantUser', (req, res) => { res.redirect('/FrontEnd/Pages/restaurantuserform.html') });
 
 //5.1 View All Donation Listing Feed for Social Service
 //Example: http://localhost:3000/viewListingsForSocialService?zipcode=19010
