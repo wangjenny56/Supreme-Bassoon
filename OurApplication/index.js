@@ -100,6 +100,21 @@ app.use('/createUser', (req, res) => {
 		customers_served: req.body.customers_served,
 		email: req.body.email,
 		phone_number: req.body.phone_number,
+		location: {
+			address: req.body.address,
+			city: req.body.city,
+			zipcode: req.body.zipcode,
+			state: req.body.state
+		},
+		hours: {
+			Monday: req.body.monday,
+			Tuesday: req.body.tuesday,
+			Wednesday: req.body.wednesday,
+			Thursday: req.body.thursday,
+			Friday: req.body.friday,
+			Saturday: req.body.saturday,
+			Sunday: req.body.sunday
+		}, 
 	});
 
 	// save the person to the database
