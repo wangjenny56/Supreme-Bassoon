@@ -60,6 +60,37 @@ app.use('/history', (req, res) => {
 	    }).sort({ 'pick_up_time': -1 }); //sorts in descending order BEFORE rendering the results
     });
 
+app.use('/createDonation', (req, res) => {
+
+	var donationListing = new User ({
+		food_description: req.body.food_description,
+		food_type: req.body.food_type,
+		quantity: req.body.quantity,
+		perishability: req.body.perishability,
+		pick_up_time: req.body.pick_up_time,
+		picked_up_by: req.body.picked_up_by,
+	    });
+
+		donationListing.save( (err) => { 
+			if (err) {
+				res.type('html').status(200);
+				res.write('uh oh: ' + err);
+				console.log(err);
+				res.end();
+			}
+			else {
+				// display the "successfull created" message
+				res.send('successfully added ' + donationListing.food_type + ' to the database');
+			}
+			} ); 
+
+		// res.write("Food Description is: " + food_description);
+	
+});
+
+app.use('/FrontEnd', express.static('FrontEnd'));
+app.use('/post', (req, res) => { res.redirect('/FrontEnd/Pages/donationform.html'); } );
+
 // This just sends back a message for any URL path not covered above
 app.use('/test', (req, res) => {
 	//return res.send('Default message.');  
