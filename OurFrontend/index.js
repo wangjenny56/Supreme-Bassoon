@@ -112,7 +112,22 @@ app.use('/api', (req, res) => {
 	    });
     });
 
-
+//get the user's listings
+app.use('/get', (req, res) =>{
+    var filter = { 'username' : req.query.username };
+    console.log(filter);
+User.findOne( filter, (err, result) => {
+if (err) {
+    
+res.json( { 'status' : err } );
+}
+else if (!result) {
+res.status(404).json();
+}
+else {
+res.status(200).json(  result.listings );
+}})
+});
 
 
 /*************************************************/
