@@ -1,0 +1,23 @@
+body{
+    margin: 0;
+    padding: 0;
+    background-color: mistyrose;
+}
+h1{
+    text-align: center;
+    margin-top:50px;
+    font-family: URW Chancery L, cursive;
+}
+.ML{
+    text-align: center;
+    margin-top: 100px;
+}
+.listing{
+    border: 1px solid salmon;
+    font-size: 20px;
+    font-family: URW Chancery L, cursive;
+    padding: 70px 80px;
+    margin: 25px;
+    background-color: bisque;
+    text-align: left;
+}
