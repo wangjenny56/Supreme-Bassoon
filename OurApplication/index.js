@@ -152,7 +152,50 @@ app.use('/viewListingsForSocialService', (req, res) => {
 		
 	})
 });
+app.use(express.static(__dirname));
+var myListings=[];
+app.use('/get', (req, res) =>{
+	
+	
+    var filter = { 'username' : req.query.username };
+    console.log(filter);
+User.findOne( filter, (err, result) => {
+if (err) {
+	res.type('html').status(404);
+}
+else if (!result) {
+	res.type('html').status(200);
+  res.write("No such user");
+  res.end();
+}
+else {
+	console.log("successful");
+	myListings=result.listings;
+	console.log(myListings);
+	res.type('html').status(200);
+	res.write("<html> <head>  <link rel=\"stylesheet\"  href=\"viewStyle.css\">	</head><body >"+
+	" <h1>Thank you for your contributions! Your offerings so far include:</h1>"+
+		  "<div id=\"myListings\" class=\"ML\" >");
+		  for( i=0;i<myListings.length;i++){
+			  res.write("<div class = \"listing\">"+myListings[i].food_type+" : "+myListings[i].food_description+"<br>");
+            res.write("Quantity : "+myListings[i].quantity+"<br>");
+			res.write("Perishability : "+myListings[i].perishability+"<br>");
+			if(myListings[i].picked_up_by=""){
+                res.write("Has not been picked up yet <br>");
+			}
+			else{
+			res.write("Picked up by "+myListings[i].picked_up_by +" at "+myListings[i].pick_up_time+"<br>");
+			}
+			res.write(myListings[i].availability_status+"</div>");
 
+		  }
+		  res.write("</div></body></html>");
+		  res.end();
+
+}});
+
+
+});
 
 // This just sends back a message for any URL path not covered above
 app.use('/test', (req, res) => {
