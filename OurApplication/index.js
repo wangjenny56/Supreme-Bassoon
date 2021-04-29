@@ -8,6 +8,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // import the Person class from Person.js
 var User = require('./User.js'); 
+const { collection, db } = require('./User.js');
 
 app.use('/all', (req, res) => {
 	User.find({}, (error, result) => {
@@ -62,32 +63,32 @@ app.use('/history', (req, res) => {
     });
 
 app.use('/createDonation', (req, res) => {
-
-	var donationListing = new User ({
+	var donationListing = {
 		food_description: req.body.food_description,
 		food_type: req.body.food_type,
 		quantity: req.body.quantity,
 		perishability: req.body.perishability,
 		pick_up_time: req.body.pick_up_time,
-		picked_up_by: req.body.picked_up_by,
-	    });
+		picked_up_by: req.body.picked_up_by
+	};
 
-		donationListing.save( (err) => { 
-			if (err) {
-				res.type('html').status(200);
-				res.write('uh oh: ' + err);
-				console.log(err);
-				res.end();
-			}
-			else {
-				// display the "successfull created" message
-				res.send('successfully added ' + req.body.food_description + ' to the database');
-			}
-			} ); 
+	console.log("kdgjhd");
 
-		// res.write("Food Description is: " + food_description);
-	
-});
+	User.findOneAndUpdate(
+		{ username: "jwang6" },
+		{$push: {"listings": donationListing}},
+
+		function (error, success) {
+		if (error) {
+			res.send(error);
+
+		} 
+		else {
+			res.send('successfully added ' + donationListing.food_description + ' to the database');
+		}
+		});
+		
+		});
 
 // endpoint for creating a new restaurant user
 app.use('/createUser', (req, res) => {
