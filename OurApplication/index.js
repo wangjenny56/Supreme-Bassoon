@@ -176,17 +176,20 @@ app.use('/createRestaurantUser', (req, res) => { res.redirect('/FrontEnd/Pages/r
 //Example: http://localhost:3000/viewListingsForSocialService?zipcode=19010
 app.use('/viewListingsForSocialService', (req, res) => {
 	var zipcode = req.query.zipcode; 
-	User.find({"location.zipcode": zipcode}, (error, result) => {
+	User.find({"location.zipcode": zipcode, "listings.availability_status": "avaliable"}, (error, result) => {
 		if(error) {
 			return console.log(`Error has occurred: ${error}`);
 		}
 		else{
 			res.type('html').status(200);
-			res.send(result[0].listings);
+			res.send(result)
+			//res.send(result[0].listings);
 		}
 		
 	})
 });
+
+
 app.use(express.static(__dirname));
 var myListings=[];
 app.use('/get', (req, res) =>{
