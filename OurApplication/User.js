@@ -45,8 +45,8 @@ var userSchema = new Schema({
             perishability: String, 
             pick_up_time: String, 
             availability_status: String, 
-            picked_up_by: String
-
+            picked_up_by: String,
+            completed: Boolean
         }
     ]
 }); 

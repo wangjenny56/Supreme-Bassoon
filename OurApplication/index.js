@@ -7,13 +7,13 @@ var bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // import the Person class from Person.js
-var User = require('./User.js'); 
+var User = require('./User.js');
 const { collection, db } = require('./User.js');
 
 app.use('/all', (req, res) => {
 	User.find({}, (error, result) => {
-		if(error) {
-		return console.log(`Error has occurred: ${error}`);
+		if (error) {
+			return console.log(`Error has occurred: ${error}`);
 		}
 		res.send(result)
 	})
@@ -21,46 +21,34 @@ app.use('/all', (req, res) => {
 
 // endpoint for showing all the listings
 app.use('/history', (req, res) => {
-	var userFound = false;
-	// find all the User objects in the database
-	User.find( {}, (err, users) => {
+
+	var name = req.query.username;
+	//read in username from URL
+
+	User.findOne({ username: name }, function (err, document) {
 		if (err) {
-		    res.type('html').status(200);
-		    console.log('uh oh' + err);
-		    res.write(err);
-		}
-		else {
-			//no users
-		    if (users.length == 0) {
 			res.type('html').status(200);
-			res.write('There are no users');
-			res.end();
-			return;
-		    }
-		    else {
-			res.type('html').status(200);
-			users.forEach( (user) => {
-				if (user.username == "jwang3"){
-					//currently only for jenny (search for 1 user)
-					userFound = true;
-					user.listings.forEach((listing) =>{
-						res.write('<li>Food Description: ' + listing.food_description + 
-						'; Food Type: ' + listing.food_type + '; Food Quantity: ' + listing.quantity +
-						'; Perishability: ' + listing.perishability + '; Pick Up Time: ' + 
-						listing.pick_up_time + '; Pick Up By: ' + listing.picked_up_by + '</li>');
-							//send information for all listings in user
-			   		});
-				}
-				else if (!userFound){
-					res.write('User not found.');
-				}
-			})
-			res.write('</ul>');
-			res.end();
-		    }
+			console.log('uh oh' + err);
+			res.write(err);
 		}
-	    }).sort({ 'pick_up_time': -1 }); //sorts in descending order BEFORE rendering the results
-    });
+		else if(!document){
+			res.write('User not found.');
+			// if undefined document, user not found
+		}
+		else{
+			document.listings.forEach((listing) => {
+				if (listing.completed == true){
+					res.write('Food Description: ' + listing.food_description +
+					'; Food Type: ' + listing.food_type + '; Food Quantity: ' + listing.quantity +
+					'; Perishability: ' + listing.perishability + '; Pick Up Time: ' +
+					listing.pick_up_time + '; Pick Up By: ' + listing.picked_up_by + '\n');
+				//send information for all listings in user if completed
+				}
+			});
+		}
+		res.end();
+	}).sort({ 'pick_up_time': -1 }); //sorts in descending order for pick up time
+});
 
 app.use('/createDonation', (req, res) => {
 	var donationListing = {
@@ -69,58 +57,59 @@ app.use('/createDonation', (req, res) => {
 		quantity: req.body.quantity,
 		perishability: req.body.perishability,
 		pick_up_time: req.body.pick_up_time,
-		picked_up_by: req.body.picked_up_by
+		picked_up_by: req.body.picked_up_by,
+		completed: "false"
 	};
 
 	console.log("kdgjhd");
 
 	User.findOneAndUpdate(
 		{ username: "jwang6" },
-		{$push: {"listings": donationListing}},
+		{ $push: { "listings": donationListing } },
 
 		function (error, success) {
-		if (error) {
-			res.send(error);
+			if (error) {
+				res.send(error);
 
-		} 
-		else {
-			res.send('successfully added ' + donationListing.food_description + ' to the database');
-		}
+			}
+			else {
+				res.send('successfully added ' + donationListing.food_description + ' to the database');
+			}
 		});
-		
-		});
+
+});
 
 app.use('/ViewAllListings', (req, res) => {
-	User.find( {}, (err, users) => {
+	User.find({}, (err, users) => {
 		if (err) {
-		    res.type('html').status(200);
-		    console.log('uh oh' + err);
-		    res.write(err);
+			res.type('html').status(200);
+			console.log('uh oh' + err);
+			res.write(err);
 		}
 		else {
 			//no users
-		    if (users.length == 0) {
-			res.type('html').status(200);
-			res.write('There are no users');
-			res.end();
-			return;
-		    }
-		    else {
-			res.type('html').status(200);
-			users.forEach( (user) => {
-				user.listings.forEach((listing) =>{
-					res.write('<li>Food Description: ' + listing.food_description + 
-					'; Food Type: ' + listing.food_type + '; Food Quantity: ' + listing.quantity +
-					'; Perishability: ' + listing.perishability + '; Pick Up Time: ' + 
-					listing.pick_up_time + '; Pick Up By: ' + listing.picked_up_by + '</li>');
+			if (users.length == 0) {
+				res.type('html').status(200);
+				res.write('There are no users');
+				res.end();
+				return;
+			}
+			else {
+				res.type('html').status(200);
+				users.forEach((user) => {
+					user.listings.forEach((listing) => {
+						res.write('<li>Food Description: ' + listing.food_description +
+							'; Food Type: ' + listing.food_type + '; Food Quantity: ' + listing.quantity +
+							'; Perishability: ' + listing.perishability + '; Pick Up Time: ' +
+							listing.pick_up_time + '; Pick Up By: ' + listing.picked_up_by + '</li>');
 						//send information for all listings in user
-			   	});
-			})
-			res.write('</ul>');
-			res.end();
-		    }
+					});
+				})
+				res.write('</ul>');
+				res.end();
+			}
 		}
-	    }).sort({ 'pick_up_time': -1 })
+	}).sort({ 'pick_up_time': -1 })
 
 });
 
@@ -149,7 +138,7 @@ app.use('/createUser', (req, res) => {
 			Friday: req.body.friday,
 			Saturday: req.body.saturday,
 			Sunday: req.body.sunday
-		}, 
+		},
 	});
 
 	// save the person to the database
@@ -175,62 +164,63 @@ app.use('/createRestaurantUser', (req, res) => { res.redirect('/FrontEnd/Pages/r
 //5.1 View All Donation Listing Feed for Social Service
 //Example: http://localhost:3000/viewListingsForSocialService?zipcode=19010
 app.use('/viewListingsForSocialService', (req, res) => {
-	var zipcode = req.query.zipcode; 
-	User.find({"location.zipcode": zipcode, "listings.availability_status": "avaliable"}, (error, result) => {
-		if(error) {
+	var zipcode = req.query.zipcode;
+	User.find({ "location.zipcode": zipcode, "listings.availability_status": "avaliable" }, (error, result) => {
+		if (error) {
 			return console.log(`Error has occurred: ${error}`);
 		}
-		else{
+		else {
 			res.type('html').status(200);
 			res.send(result)
 			//res.send(result[0].listings);
 		}
-		
+
 	})
 });
 
 
 app.use(express.static(__dirname));
-var myListings=[];
-app.use('/get', (req, res) =>{
-	
-	
-    var filter = { 'username' : req.query.username };
-    console.log(filter);
-User.findOne( filter, (err, result) => {
-if (err) {
-	res.type('html').status(404);
-}
-else if (!result) {
-	res.type('html').status(200);
-  res.write("No such user");
-  res.end();
-}
-else {
-	console.log("successful");
-	myListings=result.listings;
-	console.log(myListings);
-	res.type('html').status(200);
-	res.write("<html> <head>  <link rel=\"stylesheet\"  href=\"viewStyle.css\">	</head><body >"+
-	" <h1>Thank you for your contributions! Your offerings so far include:</h1>"+
-		  "<div id=\"myListings\" class=\"ML\" >");
-		  for( i=0;i<myListings.length;i++){
-			  res.write("<div class = \"listing\">"+myListings[i].food_type+" : "+myListings[i].food_description+"<br>");
-            res.write("Quantity : "+myListings[i].quantity+"<br>");
-			res.write("Perishability : "+myListings[i].perishability+"<br>");
-			if(myListings[i].picked_up_by=""){
-                res.write("Has not been picked up yet <br>");
-			}
-			else{
-			res.write("Picked up by "+myListings[i].picked_up_by +" at "+myListings[i].pick_up_time+"<br>");
-			}
-			res.write(myListings[i].availability_status+"</div>");
+var myListings = [];
+app.use('/get', (req, res) => {
 
-		  }
-		  res.write("</div></body></html>");
-		  res.end();
 
-}});
+	var filter = { 'username': req.query.username };
+	console.log(filter);
+	User.findOne(filter, (err, result) => {
+		if (err) {
+			res.type('html').status(404);
+		}
+		else if (!result) {
+			res.type('html').status(200);
+			res.write("No such user");
+			res.end();
+		}
+		else {
+			console.log("successful");
+			myListings = result.listings;
+			console.log(myListings);
+			res.type('html').status(200);
+			res.write("<html> <head>  <link rel=\"stylesheet\"  href=\"viewStyle.css\">	</head><body >" +
+				" <h1>Thank you for your contributions! Your offerings so far include:</h1>" +
+				"<div id=\"myListings\" class=\"ML\" >");
+			for (i = 0; i < myListings.length; i++) {
+				res.write("<div class = \"listing\">" + myListings[i].food_type + " : " + myListings[i].food_description + "<br>");
+				res.write("Quantity : " + myListings[i].quantity + "<br>");
+				res.write("Perishability : " + myListings[i].perishability + "<br>");
+				if (myListings[i].picked_up_by = "") {
+					res.write("Has not been picked up yet <br>");
+				}
+				else {
+					res.write("Picked up by " + myListings[i].picked_up_by + " at " + myListings[i].pick_up_time + "<br>");
+				}
+				res.write(myListings[i].availability_status + "</div>");
+
+			}
+			res.write("</div></body></html>");
+			res.end();
+
+		}
+	});
 
 
 });
@@ -238,7 +228,7 @@ else {
 // This just sends back a message for any URL path not covered above
 app.use('/test', (req, res) => {
 	//return res.send('Default message.');  
-    res.json({ 'status' : 'It works!' })
+	res.json({ 'status': 'It works!' })
 });
 
 app.use('/', (req, res) => {
