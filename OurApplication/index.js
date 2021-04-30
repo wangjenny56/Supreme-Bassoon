@@ -198,7 +198,6 @@ app.use('/createUser', (req, res) => {
 		},
 		listings: []
 	});
-	console.log(req.data.username);
 	// save the person to the database
 	newUser.save((err) => {
 		if (err) {
@@ -209,8 +208,9 @@ app.use('/createUser', (req, res) => {
 		}
 		else {
 			// display the "successfull created" message
-			
-			res.send('successfully added ' + newUser.username + ' to the database');
+			res.send("<html> <head>  <link rel=\"stylesheet\"  href=\"viewStyle.css\">	</head><body >" +
+				" <h1>Successfully Added: " + newUser.username + " to the database!" + "</h1>" +
+				"<div id=\"myListings\" class=\"ML\" >");
 		}
 	});
 }
