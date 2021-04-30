@@ -173,7 +173,7 @@ app.use('/viewAllListings', (req, res) => {
 // endpoint for creating a new restaurant user
 app.use('/createUser', (req, res) => {
 	// construct the restaurant user from the form data which is in the request body
-	var newUser = new User({
+	var newUser = new User ({
 		username: req.body.username,
 		password: req.body.password,
 		restaurant_name: req.body.restaurant_name,
@@ -196,8 +196,9 @@ app.use('/createUser', (req, res) => {
 			Saturday: req.body.saturday,
 			Sunday: req.body.sunday
 		},
+		listings: []
 	});
-
+	console.log(req.data.username);
 	// save the person to the database
 	newUser.save((err) => {
 		if (err) {
@@ -208,6 +209,7 @@ app.use('/createUser', (req, res) => {
 		}
 		else {
 			// display the "successfull created" message
+			
 			res.send('successfully added ' + newUser.username + ' to the database');
 		}
 	});
