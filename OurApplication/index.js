@@ -265,7 +265,7 @@ app.use('/get', (req, res) => {
 				res.write("<div class = \"listing\">" + myListings[i].food_type + " : " + myListings[i].food_description + "<br>");
 				res.write("Quantity : " + myListings[i].quantity + "<br>");
 				res.write("Perishability : " + myListings[i].perishability + "<br>");
-				if (myListings[i].picked_up_by = "") {
+				if (myListings[i].picked_up_by == "") {
 					res.write("Has not been picked up yet <br>");
 				}
 				else {
