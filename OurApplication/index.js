@@ -60,6 +60,7 @@ app.use('/history', (req, res) => {
 });
 
 app.use('/createDonation', (req, res) => {
+	var un = req.body.username; 
 	var donationListing = {
 		food_description: req.body.food_description,
 		food_type: req.body.food_type,
@@ -70,10 +71,8 @@ app.use('/createDonation', (req, res) => {
 		picked_up_by: req.body.picked_up_by
 	};
 
-	console.log("kdgjhd");
-
 	User.findOneAndUpdate(
-		{ username: "jwang6" },
+		{ username: un },
 		{ $push: { "listings": donationListing } },
 
 		function (error, success) {
@@ -82,13 +81,32 @@ app.use('/createDonation', (req, res) => {
 
 			}
 			else {
-				res.send('successfully added ' + donationListing.food_description + ' to the database');
+				res.send("<html> <head>  <link rel=\"stylesheet\"  href=\"viewStyle.css\">	</head><body >" +
+				" <h1>Successfully Added: " + donationListing.food_description + " to the database!" + "</h1>" +
+				"<div id=\"myListings\" class=\"ML\" >");
 			}
 		});
 
 });
 
-app.use('/ViewAllListings', (req, res) => {
+app.use('/viewAllListings', (req, res) => {
+	var name = req.query.username;
+	var currUser;
+	User.findOne({ username: name }, function (err, curr) {
+		if (err) {
+			res.type('html').status(404);
+			console.log('uh oh' + err);
+			res.write(err);
+		}
+		else if(!curr){
+			res.type('html').status(200);
+			res.write('User not found.');
+			// if undefined curr, user not found
+		}else{
+			currUser = curr; 
+		}
+	}); 
+
 	User.find({}, (err, users) => {
 		if (err) {
 			res.type('html').status(200);
@@ -105,16 +123,46 @@ app.use('/ViewAllListings', (req, res) => {
 			}
 			else {
 				res.type('html').status(200);
+
+				res.write("<html> <head>  <link rel=\"stylesheet\"  href=\"viewStyle.css\">	</head><body >" +
+				" <h1>All listings:</h1>" +
+				"<div id=\"myListings\" class=\"ML\" >");
+
+				res.write("<div class = \"usersListing\">" + "<h2>" + "Your current listings:" + "</h2>");
+				res.write("</p></div>");
+
+				currUser.listings.forEach((listing) => {
+					if (listing.availability_status != "not available"){
+						res.write("<div class = \"listing\">" + listing.food_type + " : " + listing.food_description + "<br>");
+						res.write("Quantity : " + listing.quantity + "<br>");
+						res.write("Perishability : " + listing.perishability + "<br>");
+						res.write("Picked up by " + listing.picked_up_by + " at " + listing.pick_up_time + "<br>");
+						res.write("</p></div>");
+					//send information for all listings in user
+					}
+				});
+				
+				res.write("<div class = \"otherListings\">" + "<h2>" + "Other Resturant Listings:" + "</h2>");
+				res.write("</p></div>");
+
 				users.forEach((user) => {
-					user.listings.forEach((listing) => {
-						res.write('<li>Food Description: ' + listing.food_description +
-							'; Food Type: ' + listing.food_type + '; Food Quantity: ' + listing.quantity +
-							'; Perishability: ' + listing.perishability + '; Pick Up Time: ' +
-							listing.pick_up_time + '; Pick Up By: ' + listing.picked_up_by + '</li>');
-						//send information for all listings in user
-					});
-				})
-				res.write('</ul>');
+					if(user.username != currUser.username){
+						res.write("<div class = \"resturant\">" + "<h2> <center>" + "Resturant: " + user.restaurant_name + "<br>");
+						res.write("Contact information: " + user.phone_number + " | " + user.email + "</center> </h2>" );
+						res.write("</p></div>");
+						user.listings.forEach((listing) => {
+							if (listing.availability_status != "not available"){
+								res.write("<div class = \"listing\">" + listing.food_type + " : " + listing.food_description + "<br>");
+								res.write("Quantity : " + listing.quantity + "<br>");
+								res.write("Perishability : " + listing.perishability + "<br>");
+								res.write("Picked up by " + listing.picked_up_by + " at " + listing.pick_up_time + "<br>");
+								res.write("</p></div>");
+							//send information for all listings in user
+							}
+						});
+						res.write("</div></body></html>");
+				}
+			})
 				res.end();
 			}
 		}
@@ -167,7 +215,8 @@ app.use('/createUser', (req, res) => {
 );
 
 app.use('/FrontEnd', express.static('FrontEnd'));
-app.use('/postDonation', (req, res) => { res.redirect('/FrontEnd/Pages/donationform.html'); });
+//app.use('/postDonation', (req, res) => { res.redirect('/FrontEnd/Pages/donationform.html'); });
+app.use('/postDonation', (req, res) => { res.redirect('/FrontEnd/Pages/donationform.html' + '?username=' + req.query.username); });
 app.use('/createRestaurantUser', (req, res) => { res.redirect('/FrontEnd/Pages/restaurantuserform.html') });
 
 //5.1 View All Donation Listing Feed for Social Service
