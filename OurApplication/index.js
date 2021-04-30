@@ -19,7 +19,8 @@ app.use('/all', (req, res) => {
 	})
 });
 
-// endpoint for showing all the listings
+
+// endpoint for showing all the listings user has completed
 app.use('/history', (req, res) => {
 
 	var name = req.query.username;
@@ -27,24 +28,32 @@ app.use('/history', (req, res) => {
 
 	User.findOne({ username: name }, function (err, document) {
 		if (err) {
-			res.type('html').status(200);
+			res.type('html').status(404);
 			console.log('uh oh' + err);
 			res.write(err);
 		}
 		else if(!document){
+			res.type('html').status(200);
 			res.write('User not found.');
 			// if undefined document, user not found
 		}
 		else{
+			res.type('html').status(200);
+			res.write("<html> <head>  <link rel=\"stylesheet\"  href=\"viewStyle.css\">	</head><body >" +
+				" <h1>Thank you for your contributions! Here are your contributions so far:</h1>" +
+				"<div id=\"myListings\" class=\"ML\" >");
+
 			document.listings.forEach((listing) => {
-				if (listing.completed == true){
-					res.write('Food Description: ' + listing.food_description +
-					'; Food Type: ' + listing.food_type + '; Food Quantity: ' + listing.quantity +
-					'; Perishability: ' + listing.perishability + '; Pick Up Time: ' +
-					listing.pick_up_time + '; Pick Up By: ' + listing.picked_up_by + '\n');
+				if (listing.availability_status == "not available"){
+					res.write("<div class = \"listing\">" + listing.food_type + " : " + listing.food_description + "<br>");
+					res.write("Quantity : " + listing.quantity + "<br>");
+					res.write("Perishability : " + listing.perishability + "<br>");
+					res.write("Picked up by " + listing.picked_up_by + " at " + listing.pick_up_time + "<br>");
+					res.write("Order Completed!</p></div>");
 				//send information for all listings in user if completed
 				}
 			});
+			res.write("</div></body></html>");
 		}
 		res.end();
 	}).sort({ 'pick_up_time': -1 }); //sorts in descending order for pick up time
@@ -57,8 +66,8 @@ app.use('/createDonation', (req, res) => {
 		quantity: req.body.quantity,
 		perishability: req.body.perishability,
 		pick_up_time: req.body.pick_up_time,
-		picked_up_by: req.body.picked_up_by,
-		completed: "false"
+		availability_status: "available",
+		picked_up_by: req.body.picked_up_by
 	};
 
 	console.log("kdgjhd");
