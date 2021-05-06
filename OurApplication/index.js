@@ -1,15 +1,47 @@
 // set up Express
 var express = require('express');
 var app = express();
+var mongoose = require('mongoose')
 
 // set up BodyParser
 var bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: true }));
+// app.use(bodyParser.json())
+ 
+// // Set EJS as templating engine
+// app.set("view engine", "ejs");
+// var multer = require('multer');
+ 
+// var storage = multer.diskStorage({
+//     destination: (req, file, cb) => {
+//         cb(null, 'uploads')
+//     },
+//     filename: (req, file, cb) => {
+//         cb(null, file.fieldname + '-' + Date.now())
+//     }
+// });
+ 
+// var upload = multer({ storage: storage });
 
-// import the Person class from Person.js
+var fs = require('fs');
+var path = require('path');
+require('dotenv/config');
+
+//setting up the connection 
+mongoose.connect(process.env.MONGO_URL,
+    { useNewUrlParser: true, useUnifiedTopology: true }, err => {
+        console.log('Mongoose is connected!')
+    });
+
+// importing schemas
 var User = require('./User.js');
 const { collection, db } = require('./User.js');
 
+
+
+
+
+/* --------------------------------------------END POINTS START----------------------------------------------*/
 app.use('/all', (req, res) => {
 	User.find({}, (error, result) => {
 		if (error) {
@@ -281,9 +313,8 @@ app.use('/get', (req, res) => {
 
 		}
 	});
-
-
 });
+
 
 // This just sends back a message for any URL path not covered above
 app.use('/test', (req, res) => {

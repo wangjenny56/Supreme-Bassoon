@@ -1,18 +1,7 @@
 var mongoose = require('mongoose');
 
-const uri = "mongodb+srv://jwang6:EAC-_hFD4_K9+9a@cluster0.z6uhh.mongodb.net/Supreme-BassoonTest";
-
-//Set up default mongoose connection
-mongoose.connect(uri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-});
-  
-mongoose.connection.on('connected',() => {
-console.log('Mongoose is connected!');
-});
-
 var Schema = mongoose.Schema;
+var food_image = require('./Image');
 
 var userSchema = new Schema({
     username: String,
@@ -46,6 +35,7 @@ var userSchema = new Schema({
             pick_up_time: String, 
             availability_status: String, 
             picked_up_by: String,
+            image: [food_image]
         }
     ]
 }); 
