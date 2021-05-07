@@ -111,8 +111,8 @@ app.use('/createDonation', (req, res) => {
 			}
 			else {
 				res.send("<html> <head>  <link rel=\"stylesheet\"  href=\"viewStyle.css\">	</head><body >" +
-				" <h1>Successfully Added: " + donationListing.food_description + " to the database!" + "</h1>" +
-				"<div id=\"myListings\" class=\"ML\" >");
+				" <h1>Successfully Edited Profile</h1>" +
+				"<div id=\"myProfile\" class=\"ML\" >");
 			}
 		});
 
@@ -245,11 +245,121 @@ app.use('/createUser', (req, res) => {
 }
 );
 
+/* restaurant_name: req.body.restaurant_name,
+		cuisine: req.body.cuisine,
+		customers_served: req.body.customers_served,
+		email: req.body.email,
+		phone_number: req.body.phone_number,
+		location: {
+			address: req.body.address,
+			city: req.body.city,
+			zipcode: req.body.zipcode,
+			state: req.body.state
+		},
+		hours: {
+			Monday: req.body.monday,
+			Tuesday: req.body.tuesday,
+			Wednesday: req.body.wednesday,
+			Thursday: req.body.thursday,
+			Friday: req.body.friday,
+			Saturday: req.body.saturday,
+			Sunday: req.body.sunday
+*/
+// app.use('/editUser', (req, res) => {
+// 	var name = req.query.username;
+// 	var user = User.findOne({username:name});
+
+// 	var restaurant_name= req.body.restaurant_name;
+// 	var cuisine= req.body.cuisine;
+// 	var customers_served= req.body.customers_served;
+// 	var email= req.body.email;
+// 	var phone_number= req.body.phone_number;
+// 	var location {
+// 			address: req.body.address,
+// 			city: req.body.city,
+// 			zipcode: req.body.zipcode,
+// 			state: req.body.state
+// 		},
+// 	var hours= {
+// 			Monday: req.body.monday,
+// 			Tuesday: req.body.tuesday,
+// 			Wednesday: req.body.wednesday,
+// 			Thursday: req.body.thursday,
+// 			Friday: req.body.friday,
+// 			Saturday: req.body.saturday,
+// 			Sunday: req.body.sunday
+// 	}
+
+// 	User.findOneAndUpdate(
+// 		{ username: un },
+// 		{ "$setOnInsert": 
+// 			{
+// 			restaurant_name: req.body.restaurant_name,
+// 			cuisine: req.body.cuisine,
+// 			customers_served: req.body.customers_served,
+// 			email: req.body.email,
+// 			phone_number: req.body.phone_number,
+// 			location: {
+// 				address: req.body.address,
+// 				city: req.body.city,
+// 				zipcode: req.body.zipcode,
+// 				state: req.body.state
+// 			},
+// 			hours: {
+// 				Monday: req.body.monday,
+// 				Tuesday: req.body.tuesday,
+// 				Wednesday: req.body.wednesday,
+// 				Thursday: req.body.thursday,
+// 				Friday: req.body.friday,
+// 				Saturday: req.body.saturday,
+// 				Sunday: req.body.sunday
+// 			}
+// 			}
+	
+// 		},
+// 		{upsert: true},
+// 		function (error, success) {
+// 			if (error) {
+// 				res.send(error);
+// 			}
+// 			else{
+
+// 			}
+
+// 	});
+
+// 	var newUser = new User ({
+// 		restaurant_name: req.body.restaurant_name,
+// 		cuisine: req.body.cuisine,
+// 		customers_served: req.body.customers_served,
+// 		email: req.body.email,
+// 		phone_number: req.body.phone_number,
+// 		location: {
+// 			address: req.body.address,
+// 			city: req.body.city,
+// 			zipcode: req.body.zipcode,
+// 			state: req.body.state
+// 		},
+// 		hours: {
+// 			Monday: req.body.monday,
+// 			Tuesday: req.body.tuesday,
+// 			Wednesday: req.body.wednesday,
+// 			Thursday: req.body.thursday,
+// 			Friday: req.body.friday,
+// 			Saturday: req.body.saturday,
+// 			Sunday: req.body.sunday
+// 		},
+// 		listings: []
+// 	});
+// 	res.send();
+// });
+
 app.use('/FrontEnd', express.static('FrontEnd'));
 //app.use('/postDonation', (req, res) => { res.redirect('/FrontEnd/Pages/donationform.html'); });
 app.use('/postDonation', (req, res) => { res.redirect('/FrontEnd/Pages/donationform.html' + '?username=' + req.query.username); });
 app.use('/createRestaurantUser', (req, res) => { res.redirect('/FrontEnd/Pages/restaurantuserform.html') });
 app.use('/login', (req, res) => { res.redirect('/FrontEnd/Pages/loginform.html') });
+app.use('/editProfile', (req, res) => { res.redirect('/FrontEnd/Pages/edituserform.html'+'?username=' + req.query.username); })
 
 //5.1 View All Donation Listing Feed for Social Service
 //Example: http://localhost:3000/viewListingsForSocialService?zipcode=19010
@@ -326,11 +436,6 @@ app.use('/get', (req, res) => {
 		}
 	});
 });
-//http://localhost:3000/?username=jwang3
-// app.use('/loginUser',(req, res) => {
-// 	var name = req.body.username; 
-// 	res.redirect('/mainmenu.html?username='+name);
-// })
 
 app.use('/mainMenu', (req, res) =>{
 	var name = req.body.username; 
@@ -343,18 +448,20 @@ app.use('/test', (req, res) => {
 	res.json({ 'status': 'It works!' })
 });
 
-//function to redirect to /get with username query
-function goView(url){
+//function to get username and pass to button url
+function goToURL(param, url){
 	var user = url.substring(url.indexOf('=')+1);
-	window.location ='http://localhost:3000/get?username='+user;
-}
+	if (param=='view'){
+	   window.location ='http://localhost:3000/get?username='+user;
+	}
+	if (param=='post'){
+	   window.location ='http://localhost:3000/postDonation?username='+user;
+	}
 
-//function to redirect to /postDonation with username query
-function goPost(url){
-	var user = url.substring(url.indexOf('=')+1);
-	window.location ='http://localhost:3000/postDonation?username='+user;
+	if (param=='edit'){
+        window.location ='http://localhost:3000/editProfile?username='+user;
+    }
 }
-
 
 app.use('/', (req, res) => {
 	res.send('Default message.');
