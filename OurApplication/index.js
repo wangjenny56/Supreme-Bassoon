@@ -256,18 +256,32 @@ app.use('/createRestaurantUser', (req, res) => { res.redirect('/FrontEnd/Pages/r
 //5.1 View All Donation Listing Feed for Social Service
 //Example: http://localhost:3000/viewListingsForSocialService?zipcode=19010
 app.use('/viewListingsForSocialService', (req, res) => {
-	var zipcode = req.query.zipcode;
-	User.find({ "location.zipcode": zipcode, "listings.availability_status": "avaliable" }, (error, result) => {
-		if (error) {
-			return console.log(`Error has occurred: ${error}`);
-		}
-		else {
-			res.type('html').status(200);
-			res.send(result)
-			//res.send(result[0].listings);
-		}
-
-	})
+	var zipcode = req.query.zipcode; 
+	if(zipcode === ''){ 
+		User.find({"listings.availability_status": "avaliable"}, (error, result) => {
+			if(error) {
+				return console.log(`Error has occurred: ${error}`);
+			}
+			else{
+				res.type('html').status(200);
+				res.send(result)
+				//res.send(result[0].listings);
+			}
+			
+		})
+	}else{
+		User.find({"location.zipcode": zipcode, "listings.availability_status": "avaliable"}, (error, result) => {
+			if(error) {
+				return console.log(`Error has occurred: ${error}`);
+			}
+			else{
+				res.type('html').status(200);
+				res.send(result)
+				//res.send(result[0].listings);
+			}
+			
+		})
+	}
 });
 
 
