@@ -1,15 +1,19 @@
 <html>
-  <head>
-      <title></title>
-    <link rel="stylesheet"  href="style.css">
-    
-  </head>
-  <body>
-    <h1>What would you like to do?</h1>
+    <body > 
+        <h1> Please Log In! </h1> 
+    </body>
+
+<form action="/mainMenu" method="post">
+
+Username: <input name="username">
+<p>
+Password: <input name="password">
+<p>
     <div class = "container">
-        <button id ="view" onclick="location.href = 'http://localhost:3000/get?username=jwang3';" class = "myButton">View My Donation Listings
-        </button>
-        <button onclick="location.href = 'http://localhost:3000/postDonation?username=jwang3';" class = "myButton">Create a Donation Listing</button>
+        <button id ="login" onclick="location.href = 'http://localhost:3000/';" class = "myButton">Log In!</button>
     </div>
-  </body>
+
+</form>
+
+
 </html>

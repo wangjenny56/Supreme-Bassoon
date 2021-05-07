@@ -38,9 +38,6 @@ var User = require('./User.js');
 const { collection, db } = require('./User.js');
 
 
-
-
-
 /* --------------------------------------------END POINTS START----------------------------------------------*/
 app.use('/all', (req, res) => {
 	User.find({}, (error, result) => {
@@ -252,6 +249,7 @@ app.use('/FrontEnd', express.static('FrontEnd'));
 //app.use('/postDonation', (req, res) => { res.redirect('/FrontEnd/Pages/donationform.html'); });
 app.use('/postDonation', (req, res) => { res.redirect('/FrontEnd/Pages/donationform.html' + '?username=' + req.query.username); });
 app.use('/createRestaurantUser', (req, res) => { res.redirect('/FrontEnd/Pages/restaurantuserform.html') });
+app.use('/login', (req, res) => { res.redirect('/FrontEnd/Pages/loginform.html') });
 
 //5.1 View All Donation Listing Feed for Social Service
 //Example: http://localhost:3000/viewListingsForSocialService?zipcode=19010
@@ -328,7 +326,16 @@ app.use('/get', (req, res) => {
 		}
 	});
 });
+//http://localhost:3000/?username=jwang3
+// app.use('/loginUser',(req, res) => {
+// 	var name = req.body.username; 
+// 	res.redirect('/mainmenu.html?username='+name);
+// })
 
+app.use('/mainMenu', (req, res) =>{
+	var name = req.body.username; 
+	res.redirect('mainmenu.html?username='+name);
+})
 
 // This just sends back a message for any URL path not covered above
 app.use('/test', (req, res) => {
@@ -336,11 +343,25 @@ app.use('/test', (req, res) => {
 	res.json({ 'status': 'It works!' })
 });
 
+//function to redirect to /get with username query
+function goView(url){
+	var user = url.substring(url.indexOf('=')+1);
+	window.location ='http://localhost:3000/get?username='+user;
+}
+
+//function to redirect to /postDonation with username query
+function goPost(url){
+	var user = url.substring(url.indexOf('=')+1);
+	window.location ='http://localhost:3000/postDonation?username='+user;
+}
+
+
 app.use('/', (req, res) => {
 	res.send('Default message.');
 });
 
 // This starts the web server on port 3000. 
 app.listen(3000, () => {
+	//Window.location.href = "http://localhost:3000/login"
 	console.log('Listening on port 3000');
 });
