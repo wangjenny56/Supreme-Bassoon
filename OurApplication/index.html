@@ -1,17 +1,25 @@
 <html>
+    <form action="/mainMenu" method="post">
+    <head>
+        <title></title>
+        <link rel="stylesheet"  href="style.css">
+    </head>
     <body > 
+        
         <h1> Please Log In! </h1> 
+
+        <div class = "formContainer">
+
+            <h4>Username: <input name="username"></h4>
+            <p>
+            <h4>Password: <input name="password"></h4>
+            <p>
+            <button id ="login" onclick="location.href = 'http://localhost:3000/';" class = "myButton">Log In!</button>
+
+        </div>
     </body>
+    
 
-<form action="/mainMenu" method="post">
-
-Username: <input name="username">
-<p>
-Password: <input name="password">
-<p>
-    <div class = "container">
-        <button id ="login" onclick="location.href = 'http://localhost:3000/';" class = "myButton">Log In!</button>
-    </div>
 
 </form>
 
