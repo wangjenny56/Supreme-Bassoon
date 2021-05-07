@@ -436,6 +436,40 @@ app.use('/get', (req, res) => {
 		}
 	});
 });
+app.use('/login', (req, res) =>{
+	if(req.query.username==""||req.query.password==""){
+        res.redirect('/emptylogin.html');
+	}
+	else{
+		var filter = { 'username' : req.query.username };
+    console.log(filter);
+		User.findOne( filter, (err, result) => {
+			if (err) {
+				res.type('html').status(404);
+				res.end();
+			}
+			else if(!result){
+               res.redirect('/invalidusername.html')
+			}
+			else if(result.password!=req.query.password){
+				res.redirect('/wrongpassword.html');
+			}
+			else{
+				res.type('html').status(200);
+				res.write("<html> <head>  <link rel=\"stylesheet\"  href=\"style.css\">	</head><body >"+
+	" <h1>Hello, "+req.query.username+"! What would you like to do?</h1>"+
+		  "<div class=\"container\" >");
+		  res.write("<button id =\"view\" onclick=\"location.href = 'http://localhost:3000/get?username="+req.query.username+"';\" class = \"myButton\">"
+		  +"View My Donation Listings</button>");
+		  res.write("<button onclick=\"location.href = 'http://localhost:3000/postDonation?username="+req.query.username+"';\" class = \"myButton\">"+
+		  "Create a Donation Listing</button>");
+		  res.write("</div></body></html>");
+		  res.end();
+			}
+		})
+	
+	}
+});
 
 app.use('/mainMenu', (req, res) =>{
 	var name = req.body.username; 
