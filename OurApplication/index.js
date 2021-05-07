@@ -111,7 +111,7 @@ app.use('/createDonation', (req, res) => {
 			}
 			else {
 				res.send("<html> <head>  <link rel=\"stylesheet\"  href=\"viewStyle.css\">	</head><body >" +
-				" <h1>Successfully Edited Profile</h1>" +
+				" <h1>Successfully Added " + req.body.food_description + "!</h1>" +
 				"<div id=\"myProfile\" class=\"ML\" >");
 			}
 		});
