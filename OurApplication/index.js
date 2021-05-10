@@ -6,22 +6,6 @@ var mongoose = require('mongoose')
 // set up BodyParser
 var bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: true }));
-// app.use(bodyParser.json())
- 
-// // Set EJS as templating engine
-// app.set("view engine", "ejs");
-// var multer = require('multer');
- 
-// var storage = multer.diskStorage({
-//     destination: (req, file, cb) => {
-//         cb(null, 'uploads')
-//     },
-//     filename: (req, file, cb) => {
-//         cb(null, file.fieldname + '-' + Date.now())
-//     }
-// });
- 
-// var upload = multer({ storage: storage });
 
 var fs = require('fs');
 var path = require('path');
@@ -97,7 +81,8 @@ app.use('/createDonation', (req, res) => {
 		perishability: req.body.perishability,
 		pick_up_time: req.body.pick_up_time,
 		availability_status: "available",
-		picked_up_by: req.body.picked_up_by
+		picked_up_by: req.body.picked_up_by,
+		food_image: req.file
 	};
 
 	User.findOneAndUpdate(
@@ -355,7 +340,6 @@ app.use('/createUser', (req, res) => {
 // });
 
 app.use('/FrontEnd', express.static('FrontEnd'));
-//app.use('/postDonation', (req, res) => { res.redirect('/FrontEnd/Pages/donationform.html'); });
 app.use('/postDonation', (req, res) => { res.redirect('/FrontEnd/Pages/donationform.html' + '?username=' + req.query.username); });
 app.use('/createRestaurantUser', (req, res) => { res.redirect('/FrontEnd/Pages/restaurantuserform.html') });
 app.use('/login', (req, res) => { res.redirect('/FrontEnd/Pages/loginform.html') });
@@ -496,6 +480,7 @@ function goToURL(param, url){
         window.location ='http://localhost:3000/editProfile?username='+user;
     }
 }
+
 
 app.use('/', (req, res) => {
 	res.send('Default message.');
