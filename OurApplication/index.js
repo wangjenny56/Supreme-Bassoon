@@ -423,6 +423,33 @@ app.use('/viewListingsForSocialService', (req, res) => {
 	}
 });
 
+//5.4 Create and Post Donation Listing for Social Service
+app.use('/addDonationForSocialService', (req, res) => {
+	console.log(req.body);
+	var donation = {
+		"food_description": req.body.foodDescription,
+		"food_type": req.body.foodType,
+		"quantity": Number(req.body.quantity),
+		"perishability": req.body.perishability,
+		"pick_up_time": req.body.pickUpTime,
+		"availability_status": "available",
+		"picked_up_by": ""
+	};
+
+		
+	User.findOneAndUpdate(
+	{ social_service_name: req.body.socialService },
+	{$push: {"listings": donation}},
+	function (error, success) {
+		if (error) {
+			res.send("fail");
+		} else {
+			res.send("done");
+		}
+	});
+	
+});
+
 
 app.use(express.static(__dirname));
 var myListings = [];
