@@ -34,9 +34,7 @@ var userSchema = new Schema({
             perishability: String, 
             pick_up_time: String, 
             availability_status: String, 
-            picked_up_by: String,
-            // image: [food_image],
-            // food_image: file
+            picked_up_by: String
         }
     ]
 }); 

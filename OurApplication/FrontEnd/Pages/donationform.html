@@ -4,7 +4,7 @@
           width: 30%;
         }
       </style>
-<form action="/createDonation" method="post">
+<form action="/createDonation" method="post" enctype="multipart/form-data">
 <head>
     <title></title>
     <link rel="stylesheet"  href="../../style.css"> 
@@ -31,15 +31,11 @@
         <p>
         <h4><label for="food_image">Insert Picture of Your Food Donation:</label>
 
-        <!-- <input type="file"
-           id="food_image" name="food_image"
-           accept="image/png, image/jpeg"></h4> -->
-
         <div class="form-group">
             <input
               type="file"
-              name="file"
-              id="input-files"
+              name="image"
+              id="image"
               class="form-control-file border"
             />
         </div>
@@ -68,21 +64,41 @@
                   }
                 }
               };
-              $("#input-files").on("change", function() {
+              $("#image").on("change", function() {
                 imagesPreview(this, "div.preview-images");
               });
             });
           </script>
+       
         <p>
         <h4><input type="submit" value="Submit"/></h4>
         </p>
-    </div>
+    </div> 
 </body>
-
-
-
 </form>
 
+
+<!-- <form action="/upload" method="POST" enctype="multipart/form-data">
+  <div>
+      <label for="name">Image Title</label>
+      <input type="text" id="name" placeholder="Name"
+             value="" name="name" required>
+  </div>
+  <div>
+      <label for="desc">Image Description</label>
+      <textarea id="desc" name="pesc" value="" rows="2"
+                placeholder="Description" required>
+      </textarea>
+  </div>
+  <div>
+      <label for="image">Upload Image</label>
+      <input type="file" id="image"
+             name="image" value="" required>
+  </div>
+  <div>
+      <button type="submit">Upload</button>
+  </div>
+</form> -->
 
 </html>
 

@@ -5,12 +5,17 @@ var mongoose = require('mongoose')
 
 // set up BodyParser
 var bodyParser = require('body-parser');
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: true}));
+
+app.use(bodyParser.json())
 
 var fs = require('fs');
 var path = require('path');
 require('dotenv/config');
-
+ 
+// Set EJS as templating engine
+app.set("view engine", "ejs");
+ 
 //setting up the connection 
 mongoose.connect(process.env.MONGO_URL,
     { useNewUrlParser: true, useUnifiedTopology: true }, err => {
@@ -20,9 +25,25 @@ mongoose.connect(process.env.MONGO_URL,
 // importing schemas
 var User = require('./User.js');
 const { collection, db } = require('./User.js');
+var imgModel = require('./Image.js');
 
-
+//images 
+var multer = require('multer');
+ 
+var storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads')
+    },
+    filename: (req, file, cb) => {
+        cb(null, file.fieldname + '-' + Date.now())
+    }
+});
+ 
+var upload = multer({ storage: storage });
 /* --------------------------------------------END POINTS START----------------------------------------------*/
+
+
+
 app.use('/all', (req, res) => {
 	User.find({}, (error, result) => {
 		if (error) {
@@ -72,7 +93,34 @@ app.use('/history', (req, res) => {
 	}).sort({ 'pick_up_time': -1 }); //sorts in descending order for pick up time
 });
 
-app.use('/createDonation', (req, res) => {
+app.get('/createDonation', (req, res) => {
+    imgModel.find({}, (err, items) => {
+        if (err) {
+            console.log(err);
+            res.status(500).send('An error occurred', err);
+        }
+        else {
+            res.render('donationform', { items: items });
+        }
+    });
+});
+
+app.post('/createDonation', upload.single('image'), (req, res, next) => {
+ 
+    var obj = {
+        name: req.body.name,
+        img: {
+            data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
+            contentType: 'image/png'
+        }
+    }
+
+    imgModel.create(obj, (err, item) => {
+        if (err) {
+            console.log(err);
+        }
+    });
+
 	var un = req.body.username; 
 	var donationListing = {
 		food_description: req.body.food_description,
@@ -82,7 +130,6 @@ app.use('/createDonation', (req, res) => {
 		pick_up_time: req.body.pick_up_time,
 		availability_status: "available",
 		picked_up_by: req.body.picked_up_by,
-		food_image: req.file
 	};
 
 	User.findOneAndUpdate(
@@ -100,6 +147,7 @@ app.use('/createDonation', (req, res) => {
 				"<div id=\"myProfile\" class=\"ML\" >");
 			}
 		});
+
 
 });
 
@@ -340,7 +388,6 @@ app.use('/createUser', (req, res) => {
 // });
 
 app.use('/FrontEnd', express.static('FrontEnd'));
-app.use('/postDonation', (req, res) => { res.redirect('/FrontEnd/Pages/donationform.html' + '?username=' + req.query.username); });
 app.use('/createRestaurantUser', (req, res) => { res.redirect('/FrontEnd/Pages/restaurantuserform.html') });
 app.use('/login', (req, res) => { res.redirect('/FrontEnd/Pages/loginform.html') });
 app.use('/editProfile', (req, res) => { res.redirect('/FrontEnd/Pages/edituserform.html'+'?username=' + req.query.username); })
@@ -445,7 +492,7 @@ app.use('/login', (req, res) =>{
 		  "<div class=\"container\" >");
 		  res.write("<button id =\"view\" onclick=\"location.href = 'http://localhost:3000/get?username="+req.query.username+"';\" class = \"myButton\">"
 		  +"View My Donation Listings</button>");
-		  res.write("<button onclick=\"location.href = 'http://localhost:3000/postDonation?username="+req.query.username+"';\" class = \"myButton\">"+
+		  res.write("<button onclick=\"location.href = 'http://localhost:3000/createDonation?username="+req.query.username+"';\" class = \"myButton\">"+
 		  "Create a Donation Listing</button>");
 		  res.write("</div></body></html>");
 		  res.end();
@@ -473,7 +520,7 @@ function goToURL(param, url){
 	   window.location ='http://localhost:3000/get?username='+user;
 	}
 	if (param=='post'){
-	   window.location ='http://localhost:3000/postDonation?username='+user;
+	   window.location ='http://localhost:3000/createDonation?username='+user;
 	}
 
 	if (param=='edit'){
