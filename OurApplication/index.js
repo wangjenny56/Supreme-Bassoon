@@ -106,7 +106,6 @@ app.get('/createDonation', (req, res) => {
 });
 
 app.post('/createDonation', upload.single('image'), (req, res, next) => {
- 
     var obj = {
         name: req.body.name,
         img: {
@@ -130,6 +129,7 @@ app.post('/createDonation', upload.single('image'), (req, res, next) => {
 		pick_up_time: req.body.pick_up_time,
 		availability_status: "available",
 		picked_up_by: req.body.picked_up_by,
+		img: req.body.image
 	};
 
 	User.findOneAndUpdate(
