@@ -1,3 +1,30 @@
+.sidenav {
+    height: 100%; 
+    width: 160px; 
+    border-left: 3px solid salmon;
+    position: fixed; 
+    z-index: 1; 
+    top: 0; 
+    right: -140px;
+    background-color: beige; 
+    overflow-x: hidden; 
+    padding-top: 20px;
+  }
+  .sidenav:hover {
+    right:0;
+  }
+  
+  .sidenav a {
+    padding: 6px 8px 6px 20px;
+    font-size: 20px;
+    font-family: URW Chancery L, cursive;
+    color: black;
+    display: block;
+  }
+  
+  .sidenav a:hover {
+    color: salmon;
+  }
 body{
     margin: 0;
     padding: 0;
