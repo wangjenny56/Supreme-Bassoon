@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+ 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Uploading</title>
+</head>
+
+<body>
+  <center>
+ <h1>Successfully Added Your New Listings!</h1>
+    <h2> Your Listings Here: </h2>
+</center> 
+    <div>
+        <% items.forEach(function(image) { %>
+        <div>
+            <div>
+                <center> 
+                <img src="data:image/<%=image.img.contentType%>;base64,
+                     <%=image.img.data.toString('base64')%>" width="300" height="200">
+                <div>
+                </center>
+                    <h5><%= image.name %></h5>
+                     
+<center>
+<h3><%= image.food %></h3>
+</center> 
+ 
+
+                </div>
+            </div>
+        </div>
+        <% }) %>
+    </div>
+</body>
+ 
+</html>
