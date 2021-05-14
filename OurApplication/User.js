@@ -4,6 +4,14 @@ var Schema = mongoose.Schema;
 var food_image = require('./Image');
 var Buffer = require('buffer').Buffer
 
+var imageSchema = new mongoose.Schema({
+    name: String,
+    img:
+    {
+        data: Buffer,
+        contentType: String
+    }
+});
 
 var userSchema = new Schema({
     username: String,
@@ -37,7 +45,7 @@ var userSchema = new Schema({
             pick_up_time: String, 
             availability_status: String, 
             picked_up_by: String,
-            img: Buffer
+            food_img: Object
         }
     ]
 }); 

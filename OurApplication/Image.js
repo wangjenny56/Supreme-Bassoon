@@ -2,8 +2,8 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
  
 var imageSchema = new mongoose.Schema({
-    name: String,
-    desc: String,
+    username: String,
+    food: String,
     img:
     {
         data: Buffer,
@@ -11,4 +11,4 @@ var imageSchema = new mongoose.Schema({
     }
 });
 
-module.exports = new mongoose.model('Image', imageSchema);
+module.exports = new mongoose.model('Image', imageSchema, "images");
