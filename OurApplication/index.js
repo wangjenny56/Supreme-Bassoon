@@ -480,6 +480,9 @@ else {
 	"</div>"+
 		  "<div id=\"myListings\" class=\"ML\" >");
 		  for( i=0;i<myListings.length;i++){
+			  if(!myListings[i].food_type||!myListings[i].quantity){
+			  }
+			  else{
 			  res.write("<div class = \"listing\">"+myListings[i].food_type+" : "+myListings[i].food_description+"<br>");
             res.write("Quantity : "+myListings[i].quantity+"<br>");
 			res.write("Perishability : "+myListings[i].perishability+"<br>");
@@ -491,8 +494,9 @@ else {
 			res.write("Picked up by "+myListings[i].picked_up_by +" at "+myListings[i].pick_up_time+"<br>");
 			}
 			res.write(myListings[i].availability_status+"</div>");
-
-		  }
+		}
+	}
+		  
 		  res.write("</div></body></html>");
 		  res.end();
 
