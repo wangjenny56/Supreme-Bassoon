@@ -26,6 +26,7 @@ mongoose.connect(process.env.MONGO_URL,
 var User = require('./User.js');
 const { collection, db } = require('./User.js');
 var imgModel = require('./Image.js');
+// const { collection, db } = require('./Image.js');
 
 //images 
 var multer = require('multer');
@@ -106,8 +107,12 @@ app.get('/createDonation', (req, res) => {
 });
 
 app.post('/createDonation', upload.single('image'), (req, res, next) => {
+	var imgUser; 
+	var newFood = req.body.food_type + "/" + req.body.food_description;
+
     var obj = {
-        name: req.body.name,
+        username: req.body.username,
+		food: newFood, 
         img: {
             data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
             contentType: 'image/png'
@@ -129,7 +134,6 @@ app.post('/createDonation', upload.single('image'), (req, res, next) => {
 		pick_up_time: req.body.pick_up_time,
 		availability_status: "available",
 		picked_up_by: req.body.picked_up_by,
-		img: req.body.image
 	};
 
 	User.findOneAndUpdate(
@@ -142,18 +146,82 @@ app.post('/createDonation', upload.single('image'), (req, res, next) => {
 
 			}
 			else {
-				res.send("<html> <head>  <link rel=\"stylesheet\"  href=\"viewStyle.css\">	</head><body >" +
-				" <h1>Successfully Added " + req.body.food_description + "!</h1>" +
-				"<div id=\"myProfile\" class=\"ML\" >");
+				res.redirect('/successfulListing' +'?username=' + req.body.username)
+				
 			}
 		});
 
 
 });
 
+app.use('/successfulListing', (req, res) => {
+	imgModel.find({username: req.query.username}, (err, items) => {
+		if (err) {
+			console.log(err);
+			res.status(500).send('An error occurred', err);
+		}
+		else {
+			res.render('successfulListing', { items: items});
+		}
+	});
+
+});
+
+
 app.use('/viewAllListings', (req, res) => {
 	var name = req.query.username;
 	var currUser;
+	var image; 
+
+	// imgModel.findOne({ username: "jwang6" }, function (err, curr) {
+	// 	if (err) {
+	// 		res.type('html').status(404);
+	// 		console.log('uh oh' + err);
+	// 		res.write(err);
+	// 	}
+	// 	else if(!curr){
+	// 		res.type('html').status(200);
+	// 		res.write('Photo not found.');
+	// 		// if undefined curr, user not found
+	// 	}else{
+	// 		imgUser = curr; 
+	// 	}
+	// }); 
+
+	// imgModel.find({}, (err, images) =>{
+	// 	if (err) {
+	// 		res.type('html').status(200);
+	// 		console.log('uh oh' + err);
+	// 		res.write(err);
+	// 	}
+	// 	else {
+	// 		//no users
+	// 		if (images.length == 0) {
+	// 			res.type('html').status(200);
+	// 			res.write('There are no photos');
+	// 			res.end();
+	// 			return;
+	// 		}
+	// 	else{
+	// 		// console.log("AHHHHHH " + imgUser.img.contentType);
+
+	// 		// var convert = imgUser.img.data.toString('base64');
+	// 		// res.send('<img src="data:imgUser/<%=imgUser.img.contentType%>;base64,<%=' + convert + '%>"');
+
+	// 		res.status(200).contentType("image/png").send(imgUser.img.data);
+	// 		// imgUser_src = 'data:imgUser/jpeg;base64,' + Buffer.from(imgUser.img.data).toString('base64');
+			
+	// 		// res.send('<img>' + template + '</img>'); 
+	// 		// res.render(imgUser_src);
+
+	// 		// var your_binary_data = imgUser.img.data.replace(/(..)/gim,'%$1'); // parse text data to URI format
+
+	// 		// window.open('data:image/jpeg;,'+your_binary_data);
+			
+	// 	}
+	// }
+	// }); 
+		
 	User.findOne({ username: name }, function (err, curr) {
 		if (err) {
 			res.type('html').status(404);
@@ -193,6 +261,8 @@ app.use('/viewAllListings', (req, res) => {
 				res.write("<div class = \"usersListing\">" + "<h2>" + "Your current listings:" + "</h2>");
 				res.write("</p></div>");
 
+				
+
 				currUser.listings.forEach((listing) => {
 					if (listing.availability_status != "not available"){
 						res.write("<div class = \"listing\">" + listing.food_type + " : " + listing.food_description + "<br>");
@@ -202,6 +272,22 @@ app.use('/viewAllListings', (req, res) => {
 						res.write("</p></div>");
 					//send information for all listings in user
 					}
+
+					var food_name = listing.food_type + "/" + listing.food_description
+					imgModel.findOne({ username: name, food: food_name}, function (err, curr) {
+						if (!err && curr){
+							image = curr; 
+							console.log(image.food);
+							// imgUser_src = 'data:image/jpeg;base64,' + Buffer.from(image.img.data).toString('base64');
+							// res.send('<img>' + imgUser_src + '</img>');
+							// res.status(200).contentType("image/png").send(image.img.data);
+							// var convert = image.img.data.toString('base64');
+							// res.write('<img src="data:image/<%=image.img.contentType%>;base64,<%=' + convert + '%>">');
+						}
+						
+					});
+					
+
 				});
 				
 				res.write("<div class = \"otherListings\">" + "<h2>" + "Other Resturant Listings:" + "</h2>");
@@ -221,6 +307,19 @@ app.use('/viewAllListings', (req, res) => {
 								res.write("</p></div>");
 							//send information for all listings in user
 							}
+
+							var food_name = listing.food_type + "/" + listing.food_description
+							imgModel.findOne({ username: name, food : food_name}, function (err, curr) {
+								if (!err && curr){
+									image = curr; 
+									console.log(image.food);
+									// imgUser_src = 'data:image/jpeg;base64,' + Buffer.from(image.img.data).toString('base64');
+									// res.write('<img>' + imgUser_src + '</img>');
+									// res.status(200).contentType("image/png").send(image.img.data);
+									// var convert = image.img.data.toString('base64');
+									// res.write('<img src="data:image/<%=image.img.contentType%>;base64,<%=' + convert + '%>">');
+								}
+							}); 
 						});
 						res.write("</div></body></html>");
 				}
@@ -231,6 +330,7 @@ app.use('/viewAllListings', (req, res) => {
 	}).sort({ 'pick_up_time': -1 })
 
 });
+
 
 // endpoint for creating a new restaurant user
 app.use('/createUser', (req, res) => {
