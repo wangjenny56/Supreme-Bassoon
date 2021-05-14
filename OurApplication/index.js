@@ -389,7 +389,7 @@ app.use('/createUser', (req, res) => {
 
 app.use('/FrontEnd', express.static('FrontEnd'));
 app.use('/createRestaurantUser', (req, res) => { res.redirect('/FrontEnd/Pages/restaurantuserform.html') });
-app.use('/login', (req, res) => { res.redirect('/FrontEnd/Pages/loginform.html') });
+
 app.use('/editProfile', (req, res) => { res.redirect('/FrontEnd/Pages/edituserform.html'+'?username=' + req.query.username); })
 
 //5.1 View All Donation Listing Feed for Social Service
