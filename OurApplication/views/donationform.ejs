@@ -84,8 +84,8 @@
             </div> 
         </body>
         </form>
- 
-    <h1>Uploaded Images</h1>
+ <center>
+    <h1>Your Past Listings</h1>
   
     <div>
         <% items.forEach(function(image) { %>
@@ -94,16 +94,17 @@
                 <img src="data:image/<%=image.img.contentType%>;base64,
                      <%=image.img.data.toString('base64')%>" width="300" height="200">
                 <div>
-                    <h5><%= image.name %></h5>
+                    <h5><%= image.food%></h5>
                      
- 
-<p><%= image.desc %></p>
+                  
+<!-- <p><%= image.desc %></p> -->
  
  
                 </div>
             </div>
         </div>
         <% }) %>
+      </center>
     </div>
 </body>
  
