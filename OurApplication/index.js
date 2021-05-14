@@ -609,7 +609,7 @@ app.use('/addDonationForSocialService', (req, res) => {
 		"food_description": req.body.foodDescription,
 		"food_type": req.body.foodType,
 		"quantity": Number(req.body.quantity),
-		"perishability": Number(req.body.perishability),
+		"perishability": Number(req.body.perishability) + " hours",
 		"pick_up_time": req.body.pickUpTime,
 		"availability_status": "available",
 		"picked_up_by": ""
