@@ -278,118 +278,165 @@ app.use('/createUser', (req, res) => {
 }
 );
 
-/* restaurant_name: req.body.restaurant_name,
-		cuisine: req.body.cuisine,
-		customers_served: req.body.customers_served,
-		email: req.body.email,
-		phone_number: req.body.phone_number,
-		location: {
-			address: req.body.address,
-			city: req.body.city,
-			zipcode: req.body.zipcode,
-			state: req.body.state
-		},
-		hours: {
-			Monday: req.body.monday,
-			Tuesday: req.body.tuesday,
-			Wednesday: req.body.wednesday,
-			Thursday: req.body.thursday,
-			Friday: req.body.friday,
-			Saturday: req.body.saturday,
-			Sunday: req.body.sunday
-*/
-// app.use('/editUser', (req, res) => {
-// 	var name = req.query.username;
-// 	var user = User.findOne({username:name});
+mongoose.set('useFindAndModify', false);
+app.use('/editUser', (req, res) => {
+	var name = req.body.username;
+	var filter = { 'username': name };
+	//create empty fields
+	var restaurant_name;
+	var cuisine;
+	var customers_served;
+	var email;
+	var phone_number;
+	var location = {
+		address: "",
+		city: "",
+		zipcode: "",
+		state: ""
+	};
+	var hours = {
+		Monday: "",
+		Tuesday: "",
+		Wednesday: "",
+		Thursday: "",
+		Friday: "",
+		Saturday: "",
+		Sunday: ""
+	};
 
-// 	var restaurant_name= req.body.restaurant_name;
-// 	var cuisine= req.body.cuisine;
-// 	var customers_served= req.body.customers_served;
-// 	var email= req.body.email;
-// 	var phone_number= req.body.phone_number;
-// 	var location {
-// 			address: req.body.address,
-// 			city: req.body.city,
-// 			zipcode: req.body.zipcode,
-// 			state: req.body.state
-// 		},
-// 	var hours= {
-// 			Monday: req.body.monday,
-// 			Tuesday: req.body.tuesday,
-// 			Wednesday: req.body.wednesday,
-// 			Thursday: req.body.thursday,
-// 			Friday: req.body.friday,
-// 			Saturday: req.body.saturday,
-// 			Sunday: req.body.sunday
-// 	}
+	User.findOne(filter,
+		(err, user) => {
+			if (err) {
+				res.type('html').status(404);
+				res.end();
+			}
+			else if (!user) {
+				res.type('html').status(200);
+				res.write("No such user");
+				res.end();
+			}
+			else {
+				res.type('html').status(200);
+				//first set all fields to existing values
+				restaurant_name = user.restaurant_name;
+				cuisine = user.cuisine;
+				customers_served = user.customers_served;
+				email = user.email;
+				phone_number = user.phone_number;
+				location = {
+					address: user.location.address,
+					city: user.location.city,
+					zipcode: user.location.zipcode,
+					state: user.location.state
+				}
+				hours = {
+					Monday: user.hours.Monday,
+					Tuesday: user.hours.Tuesday,
+					Wednesday: user.hours.Wednesday,
+					Thursday: user.hours.Thursday,
+					Friday: user.hours.Friday,
+					Saturday: user.hours.Saturday,
+					Sunday: user.hours.Sunday
+				}
+				//check each field if user entered in form
+				if (req.body.restaurant_name) {
+					restaurant_name = req.body.restaurant_name;
+				}
+				if (req.body.cuisine) {
+					cuisine = req.body.cuisine;
+				}
+				if (req.body.customers_served) {
+					customers_served = req.body.customers_served;
+				}
+				if (req.body.email) {
+					email = req.body.email;
+				}
+				if (req.body.phone_number) {
+					phone_number = req.body.phone_number;
+				}
+				if (req.body.address) {
+					location.address = req.body.address;
+				}
+				if (req.body.city) {
+					location.city = req.body.city;
+				}
+				if (req.body.zipcode) {
+					location.zipcode = req.body.zipcode;
+				}
+				if (req.body.state) {
+					location.state = req.body.state;
+				}
+				if (req.body.monday) {
+					hours.Monday = req.body.monday;
+				}
+				if (req.body.tuesday) {
+					hours.Tuesday = req.body.tuesday;
+				}
+				if (req.body.wednesday) {
+					hours.Wednesday = req.body.wednesday;
+				}
+				if (req.body.thursday) {
+					hours.Thursday = req.body.thursday;
+				}
+				if (req.body.friday) {
+					hours.Friday = req.body.friday;
+				}
+				if (req.body.saturday) {
+					hours.Saturday = req.body.saturday;
+				}
+				if (req.body.sunday) {
+					hours.Sunday = req.body.sunday;
+				}
 
-// 	User.findOneAndUpdate(
-// 		{ username: un },
-// 		{ "$setOnInsert": 
-// 			{
-// 			restaurant_name: req.body.restaurant_name,
-// 			cuisine: req.body.cuisine,
-// 			customers_served: req.body.customers_served,
-// 			email: req.body.email,
-// 			phone_number: req.body.phone_number,
-// 			location: {
-// 				address: req.body.address,
-// 				city: req.body.city,
-// 				zipcode: req.body.zipcode,
-// 				state: req.body.state
-// 			},
-// 			hours: {
-// 				Monday: req.body.monday,
-// 				Tuesday: req.body.tuesday,
-// 				Wednesday: req.body.wednesday,
-// 				Thursday: req.body.thursday,
-// 				Friday: req.body.friday,
-// 				Saturday: req.body.saturday,
-// 				Sunday: req.body.sunday
-// 			}
-// 			}
-	
-// 		},
-// 		{upsert: true},
-// 		function (error, success) {
-// 			if (error) {
-// 				res.send(error);
-// 			}
-// 			else{
+				//update using variables, if user entered value it will be 
+				//user value, if not, it is existing value
+				User.findOneAndUpdate(
+					filter,
+					{$set: {
+						"restaurant_name": restaurant_name,
+						"cuisine": cuisine,
+						"customers_served": customers_served,
+						"email": email,
+						"phone_number": phone_number,
+						"location.address": location.address,
+						"location.city": location.city,
+						"location.zipcode": location.zipcode,
+						"location.state": location.state,
 
-// 			}
+						"hours.Monday": hours.Monday,
+						"hours.Tuesday": hours.Tuesday,
+						"hours.Wednesday": hours.Wednesday,
+						"hours.Thursday": hours.Thursday,
+						"hours.Friday": hours.Friday,
+						"hours.Saturday": hours.Saturday,
+						"hours.Sunday": hours.Sunday
+					}},
+					function (error, user) {
+						if (error) {
+							res.send(error);
+						}
+						if (!user) {
+							res.send("No such user");
+						}
+						else {
+							res.write("<html> <head>  <link rel=\"stylesheet\"  href=\"viewStyle.css\">	</head><body >" +
+							" <h1>Successfully Edited " + user.username + "'s profile!" + "</h1>" );
+							//ar loginURL = "http://localhost:3000/login?username="+name;
+							// setTimeout(function() {
+							// 	//window.location = loginURL;
+							// 	res.redirect('/login?username='+name);
+							// }, 500)
+						}
 
-// 	});
-
-// 	var newUser = new User ({
-// 		restaurant_name: req.body.restaurant_name,
-// 		cuisine: req.body.cuisine,
-// 		customers_served: req.body.customers_served,
-// 		email: req.body.email,
-// 		phone_number: req.body.phone_number,
-// 		location: {
-// 			address: req.body.address,
-// 			city: req.body.city,
-// 			zipcode: req.body.zipcode,
-// 			state: req.body.state
-// 		},
-// 		hours: {
-// 			Monday: req.body.monday,
-// 			Tuesday: req.body.tuesday,
-// 			Wednesday: req.body.wednesday,
-// 			Thursday: req.body.thursday,
-// 			Friday: req.body.friday,
-// 			Saturday: req.body.saturday,
-// 			Sunday: req.body.sunday
-// 		},
-// 		listings: []
-// 	});
-// 	res.send();
-// });
+					});
+			}
+		}
+	);
+});
 
 app.use('/FrontEnd', express.static('FrontEnd'));
 app.use('/createRestaurantUser', (req, res) => { res.redirect('/FrontEnd/Pages/restaurantuserform.html') });
-app.use('/login', (req, res) => { res.redirect('/FrontEnd/Pages/loginform.html') });
+
 app.use('/editProfile', (req, res) => { res.redirect('/FrontEnd/Pages/edituserform.html'+'?username=' + req.query.username); })
 
 //5.1 View All Donation Listing Feed for Social Service
@@ -430,7 +477,7 @@ app.use('/addDonationForSocialService', (req, res) => {
 		"food_description": req.body.foodDescription,
 		"food_type": req.body.foodType,
 		"quantity": Number(req.body.quantity),
-		"perishability": req.body.perishability,
+		"perishability": Number(req.body.perishability),
 		"pick_up_time": req.body.pickUpTime,
 		"availability_status": "available",
 		"picked_up_by": ""
@@ -480,6 +527,9 @@ else {
 	"</div>"+
 		  "<div id=\"myListings\" class=\"ML\" >");
 		  for( i=0;i<myListings.length;i++){
+			  if(!myListings[i].food_type||!myListings[i].quantity){
+			  }
+			  else{
 			  res.write("<div class = \"listing\">"+myListings[i].food_type+" : "+myListings[i].food_description+"<br>");
             res.write("Quantity : "+myListings[i].quantity+"<br>");
 			res.write("Perishability : "+myListings[i].perishability+"<br>");
@@ -491,8 +541,9 @@ else {
 			res.write("Picked up by "+myListings[i].picked_up_by +" at "+myListings[i].pick_up_time+"<br>");
 			}
 			res.write(myListings[i].availability_status+"</div>");
-
-		  }
+		}
+	}
+		  
 		  res.write("</div></body></html>");
 		  res.end();
 
@@ -537,7 +588,7 @@ app.use('/login', (req, res) =>{
   +"<div class=\"container\" >");
 		  res.write("<button id =\"view\" onclick=\"location.href = 'http://localhost:3000/get?username="+req.query.username+"';\" class = \"myButton\">"
 		  +"View My Donation Listings</button>");
-		  res.write("<button onclick=\"location.href = 'http://localhost:3000/postDonation?username="+req.query.username+"';\" class = \"myButton\">"+
+		  res.write("<button onclick=\"location.href = 'http://localhost:3000/createDonation?username="+req.query.username+"';\" class = \"myButton\">"+
 		  "Create a Donation Listing</button>");
 		  res.write("</div></body></html>");
 		  res.end();
