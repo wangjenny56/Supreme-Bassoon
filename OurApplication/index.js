@@ -122,6 +122,12 @@ app.post('/createDonation', upload.single('image'), (req, res, next) => {
 				contentType: 'image/png'
 			}
     	}
+		imgModel.create(obj, (err, item) => {
+			if (err) {
+				console.log(err);
+			}
+		});
+	
 	}
 
 	var un = req.body.username; 
