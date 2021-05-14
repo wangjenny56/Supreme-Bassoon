@@ -494,6 +494,14 @@ app.use('/get', (req, res) => {
 		}
 	});
 });
+app.use('/takemetologin', (req, res) =>{
+        res.redirect('/login.html');
+	
+});
+app.use('/start', (req, res) =>{
+	res.redirect('/start.html');
+
+});
 app.use('/login', (req, res) =>{
 	if(req.query.username==""||req.query.password==""){
         res.redirect('/emptylogin.html');
@@ -515,11 +523,15 @@ app.use('/login', (req, res) =>{
 			else{
 				res.type('html').status(200);
 				res.write("<html> <head>  <link rel=\"stylesheet\"  href=\"style.css\">	</head><body >"+
-	" <h1>Hello, "+req.query.username+"! What would you like to do?</h1>"+
-		  "<div class=\"container\" >");
+	" <h1>Hello, "+req.query.username+"! What would you like to do?</h1> <div class=\"sidenav\">"+
+	"<a href=\"#\" onclick=\"location.href = 'http://localhost:3000/history?username="+req.query.username+"';\" >My history</a>"+
+	"<a href=\"#\" onclick=\"location.href = 'http://localhost:3000/editProfile?username="+req.query.username+"';\" >Edit profile</a>"+
+	"<a href=\"#\"  onclick=\"location.href = 'http://localhost:3000/start';\">Sign out</a>"+
+	"</div>"
+  +"<div class=\"container\" >");
 		  res.write("<button id =\"view\" onclick=\"location.href = 'http://localhost:3000/get?username="+req.query.username+"';\" class = \"myButton\">"
 		  +"View My Donation Listings</button>");
-		  res.write("<button onclick=\"location.href = 'http://localhost:3000/createDonation?username="+req.query.username+"';\" class = \"myButton\">"+
+		  res.write("<button onclick=\"location.href = 'http://localhost:3000/postDonation?username="+req.query.username+"';\" class = \"myButton\">"+
 		  "Create a Donation Listing</button>");
 		  res.write("</div></body></html>");
 		  res.end();
