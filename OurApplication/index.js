@@ -69,7 +69,9 @@ app.use('/history', (req, res) => {
 		}
 		else if(!document){
 			res.type('html').status(200);
-			res.write('User not found.');
+			res.send("<html> <head>  <link rel=\"stylesheet\"  href=\"viewStyle.css\">	</head><body >" +
+			" <h1>Wrong user!</h1>");
+			return;
 			// if undefined document, user not found
 		}
 		else{
@@ -107,23 +109,20 @@ app.get('/createDonation', (req, res) => {
 });
 
 app.post('/createDonation', upload.single('image'), (req, res, next) => {
-	var imgUser; 
-	var newFood = req.body.food_type + "/" + req.body.food_description;
+	//only process image is there is an image
+	if (req.file){
+		var imgUser;
+		var newFood = req.body.food_type + "/" + req.body.food_description;
 
-    var obj = {
-        username: req.body.username,
-		food: newFood, 
-        img: {
-            data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
-            contentType: 'image/png'
-        }
-    }
-
-    imgModel.create(obj, (err, item) => {
-        if (err) {
-            console.log(err);
-        }
-    });
+		var obj = {
+			username: req.body.username,
+			food: newFood,
+			img: {
+				data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
+				contentType: 'image/png'
+			}
+    	}
+	}
 
 	var un = req.body.username; 
 	var donationListing = {
@@ -140,18 +139,21 @@ app.post('/createDonation', upload.single('image'), (req, res, next) => {
 		{ username: un },
 		{ $push: { "listings": donationListing } },
 
-		function (error, success) {
+		function (error, user) {
 			if (error) {
 				res.send(error);
-
+				return;
+			}
+			else if (!user){
+				res.send("<html> <head>  <link rel=\"stylesheet\"  href=\"viewStyle.css\">	</head><body >" +
+				" <h1>No such user, Try again!</h1>");
+				return;
 			}
 			else {
 				res.redirect('/successfulListing' +'?username=' + req.body.username)
-				
+				return;
 			}
 		});
-
-
 });
 
 app.use('/successfulListing', (req, res) => {
@@ -230,7 +232,7 @@ app.use('/viewAllListings', (req, res) => {
 		}
 		else if(!curr){
 			res.type('html').status(200);
-			res.write('User not found.');
+			res.redirect('/invalidusername.html')
 			// if undefined curr, user not found
 		}else{
 			currUser = curr; 
@@ -335,7 +337,8 @@ app.use('/viewAllListings', (req, res) => {
 // endpoint for creating a new restaurant user
 app.use('/createUser', (req, res) => {
 	// construct the restaurant user from the form data which is in the request body
-	var newUser = new User ({
+
+	var newUser = new User({
 		username: req.body.username,
 		password: req.body.password,
 		restaurant_name: req.body.restaurant_name,
@@ -366,6 +369,8 @@ app.use('/createUser', (req, res) => {
 			res.type('html').status(200);
 			res.write('uh oh: ' + err);
 			console.log(err);
+			res.send("<html> <head>  <link rel=\"stylesheet\"  href=\"viewStyle.css\">	</head><body >" +
+				" <h1>Error in saving, Try again!</h1>");
 			res.end();
 		}
 		else {
@@ -375,11 +380,12 @@ app.use('/createUser', (req, res) => {
 				"<div id=\"myListings\" class=\"ML\" >");
 		}
 	});
-}
-);
+});
 
 mongoose.set('useFindAndModify', false);
 app.use('/editUser', (req, res) => {
+	//boolean to keep track if fields were typed in
+	var edit = 'false'
 	var name = req.body.username;
 	var filter = { 'username': name };
 	//create empty fields
@@ -404,6 +410,7 @@ app.use('/editUser', (req, res) => {
 		Sunday: ""
 	};
 
+	//find user based on inputted username
 	User.findOne(filter,
 		(err, user) => {
 			if (err) {
@@ -412,7 +419,8 @@ app.use('/editUser', (req, res) => {
 			}
 			else if (!user) {
 				res.type('html').status(200);
-				res.write("No such user");
+				res.send("<html> <head>  <link rel=\"stylesheet\"  href=\"viewStyle.css\">	</head><body >" +
+				" <h1>No user found. Try Again!</h1>");
 				res.end();
 			}
 			else {
@@ -441,53 +449,74 @@ app.use('/editUser', (req, res) => {
 				//check each field if user entered in form
 				if (req.body.restaurant_name) {
 					restaurant_name = req.body.restaurant_name;
+					edit = 'true';
 				}
 				if (req.body.cuisine) {
 					cuisine = req.body.cuisine;
+					edit = 'true';
 				}
 				if (req.body.customers_served) {
 					customers_served = req.body.customers_served;
+					edit = 'true';
 				}
 				if (req.body.email) {
 					email = req.body.email;
+					edit = 'true';
 				}
 				if (req.body.phone_number) {
 					phone_number = req.body.phone_number;
+					edit = 'true';
 				}
 				if (req.body.address) {
 					location.address = req.body.address;
+					edit = 'true';
 				}
 				if (req.body.city) {
 					location.city = req.body.city;
+					edit = 'true';
 				}
 				if (req.body.zipcode) {
 					location.zipcode = req.body.zipcode;
+					edit = 'true';
 				}
 				if (req.body.state) {
 					location.state = req.body.state;
+					edit = 'true';
 				}
 				if (req.body.monday) {
 					hours.Monday = req.body.monday;
+					edit = 'true';
 				}
 				if (req.body.tuesday) {
 					hours.Tuesday = req.body.tuesday;
+					edit = 'true';
 				}
 				if (req.body.wednesday) {
 					hours.Wednesday = req.body.wednesday;
+					edit = 'true';
 				}
 				if (req.body.thursday) {
 					hours.Thursday = req.body.thursday;
+					edit = 'true';
 				}
 				if (req.body.friday) {
 					hours.Friday = req.body.friday;
+					edit = 'true';
 				}
 				if (req.body.saturday) {
 					hours.Saturday = req.body.saturday;
+					edit = 'true';
 				}
 				if (req.body.sunday) {
 					hours.Sunday = req.body.sunday;
+					edit = 'true';
 				}
 
+				if(edit=='false'){
+					res.write("<html> <head>  <link rel=\"stylesheet\"  href=\"viewStyle.css\">	</head><body >" +
+							" <h1>Please edit " + user.username + "'s profile!" + "</h1>" );
+					return;
+				}
 				//update using variables, if user entered value it will be 
 				//user value, if not, it is existing value
 				User.findOneAndUpdate(
@@ -513,10 +542,12 @@ app.use('/editUser', (req, res) => {
 					}},
 					function (error, user) {
 						if (error) {
+							res.type('html').status(404);
 							res.send(error);
 						}
 						if (!user) {
-							res.send("No such user");
+							res.write("<html> <head>  <link rel=\"stylesheet\"  href=\"viewStyle.css\">	</head><body >" +
+							" <h1>No such user, Try again!</h1>" );
 						}
 						else {
 							res.write("<html> <head>  <link rel=\"stylesheet\"  href=\"viewStyle.css\">	</head><body >" +
@@ -526,6 +557,7 @@ app.use('/editUser', (req, res) => {
 							// 	//window.location = loginURL;
 							// 	res.redirect('/login?username='+name);
 							// }, 500)
+							return;
 						}
 
 					});
@@ -611,7 +643,8 @@ if (err) {
 }
 else if (!result) {
 	res.type('html').status(200);
-  res.write("No such user");
+	res.send("<html> <head>  <link rel=\"stylesheet\"  href=\"viewStyle.css\">	</head><body >" +
+	" <h1>No such user!</h1>");
   res.end();
 }
 else {
