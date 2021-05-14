@@ -64,7 +64,9 @@
                             reader.onload = function(event) {
                               $($.parseHTML("<img>"))
                                 .attr("src", event.target.result)
-                                .appendTo(placeToInsertImagePreview);
+                                .appendTo(placeToInsertImagePreview)
+                                .height(200)
+                                .width(300);
                             };
                             reader.readAsDataURL(input.files[i]);
                           }
@@ -90,7 +92,7 @@
         <div>
             <div>
                 <img src="data:image/<%=image.img.contentType%>;base64,
-                     <%=image.img.data.toString('base64')%>">
+                     <%=image.img.data.toString('base64')%>" width="300" height="200">
                 <div>
                     <h5><%= image.name %></h5>
                      
